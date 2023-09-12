@@ -37,7 +37,7 @@ blocks:
   id: variable
   parameters:
     comment: ''
-    value: 94.1e6
+    value: 105.5e6
   states:
     bus_sink: false
     bus_source: false
@@ -178,7 +178,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1296, 700.0]
+    coordinate: [1456, 692.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0
@@ -246,20 +246,20 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    bw: 20e6
+    bw: 100e6
     comment: ''
-    fc: 100e6
+    fc: variable_qtgui_range_0
     fftsize: '1024'
     gui_hint: ''
     maxoutbuf: '0'
     minoutbuf: '0'
     name: '""'
-    plotconst: 'True'
+    plotconst: 'False'
     plotfreq: 'True'
-    plottime: 'True'
+    plottime: 'False'
     plotwaterfall: 'True'
     rate: '10'
-    showports: 'False'
+    showports: 'True'
     showrf: 'True'
     type: complex
     wintype: window.WIN_BLACKMAN_hARRIS
@@ -267,7 +267,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [584, 396.0]
+    coordinate: [872, 380.0]
     rotation: 0
     state: true
 - name: rational_resampler_xxx_1
@@ -537,7 +537,7 @@ blocks:
     freq7: 100e6
     freq8: 100e6
     freq9: 100e6
-    gain0: '20'
+    gain0: '40'
     gain1: '10'
     gain10: '10'
     gain11: '10'
@@ -706,7 +706,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [72, 196.0]
+    coordinate: [120, 252.0]
     rotation: 0
     state: disabled
 
