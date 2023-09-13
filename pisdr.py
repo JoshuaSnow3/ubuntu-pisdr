@@ -83,17 +83,17 @@ class pisdr(gr.top_block, Qt.QWidget):
         ##################################################
         self.freq = freq = 105.5e6
         self.variable_qtgui_range_0 = variable_qtgui_range_0 = freq
-        self.source_chooser = source_chooser = '0'
+        self.source_chooser = source_chooser = 0
         self.samp_rate = samp_rate = 2048000
 
         ##################################################
         # Blocks
         ##################################################
-        self._variable_qtgui_range_0_range = Range(86e6, 110e6, 10000, freq, 200)
+        self._variable_qtgui_range_0_range = Range(1e6, 1e9, 10000, freq, 200)
         self._variable_qtgui_range_0_win = RangeWidget(self._variable_qtgui_range_0_range, self.set_variable_qtgui_range_0, "'variable_qtgui_range_0'", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._variable_qtgui_range_0_win)
         # Create the options list
-        self._source_chooser_options = ['0', '1']
+        self._source_chooser_options = [0, 1]
         # Create the labels list
         self._source_chooser_labels = ['FM', 'Test Signals']
         # Create the combo box
@@ -132,6 +132,16 @@ class pisdr(gr.top_block, Qt.QWidget):
         self.rtlsdr_source_0.set_bb_gain(20, 0)
         self.rtlsdr_source_0.set_antenna('', 0)
         self.rtlsdr_source_0.set_bandwidth(0, 0)
+        self.rational_resampler_xxx_1_0_1 = filter.rational_resampler_ccf(
+                interpolation=1,
+                decimation=4,
+                taps=[],
+                fractional_bw=0)
+        self.rational_resampler_xxx_1_0_0_0 = filter.rational_resampler_fff(
+                interpolation=50,
+                decimation=50,
+                taps=[],
+                fractional_bw=0)
         self.rational_resampler_xxx_1_0_0 = filter.rational_resampler_fff(
                 interpolation=50,
                 decimation=50,
@@ -169,7 +179,12 @@ class pisdr(gr.top_block, Qt.QWidget):
                 1e6,
                 window.WIN_HAMMING,
                 6.76))
+        self.blocks_selector_0 = blocks.selector(gr.sizeof_gr_complex*1,0,source_chooser)
+        self.blocks_selector_0.set_enabled(True)
+        self.blocks_multiply_const_vxx_0_0_0 = blocks.multiply_const_ff(1)
         self.blocks_multiply_const_vxx_0_0 = blocks.multiply_const_ff(1)
+        self.blocks_complex_to_float_0 = blocks.complex_to_float(1)
+        self.audio_sink_0_0_0 = audio.sink(48000, '', True)
         self.audio_sink_0_0 = audio.sink(48000, '', True)
         self.analog_wfm_rcv_0 = analog.wfm_rcv(
         	quad_rate=500e3,
@@ -181,12 +196,18 @@ class pisdr(gr.top_block, Qt.QWidget):
         # Connections
         ##################################################
         self.connect((self.analog_wfm_rcv_0, 0), (self.rational_resampler_xxx_1_0_0, 0))
+        self.connect((self.blocks_complex_to_float_0, 0), (self.rational_resampler_xxx_1_0_0_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0_0, 0), (self.audio_sink_0_0, 0))
+        self.connect((self.blocks_multiply_const_vxx_0_0_0, 0), (self.audio_sink_0_0_0, 0))
+        self.connect((self.blocks_selector_0, 0), (self.rational_resampler_xxx_1_0, 0))
+        self.connect((self.blocks_selector_0, 1), (self.rational_resampler_xxx_1_0_1, 0))
         self.connect((self.low_pass_filter_0, 0), (self.analog_wfm_rcv_0, 0))
         self.connect((self.rational_resampler_xxx_1_0, 0), (self.low_pass_filter_0, 0))
         self.connect((self.rational_resampler_xxx_1_0_0, 0), (self.blocks_multiply_const_vxx_0_0, 0))
+        self.connect((self.rational_resampler_xxx_1_0_0_0, 0), (self.blocks_multiply_const_vxx_0_0_0, 0))
+        self.connect((self.rational_resampler_xxx_1_0_1, 0), (self.blocks_complex_to_float_0, 0))
+        self.connect((self.rtlsdr_source_0, 0), (self.blocks_selector_0, 0))
         self.connect((self.rtlsdr_source_0, 0), (self.qtgui_sink_x_0, 0))
-        self.connect((self.rtlsdr_source_0, 0), (self.rational_resampler_xxx_1_0, 0))
 
 
     def closeEvent(self, event):
@@ -218,6 +239,7 @@ class pisdr(gr.top_block, Qt.QWidget):
     def set_source_chooser(self, source_chooser):
         self.source_chooser = source_chooser
         self._source_chooser_callback(self.source_chooser)
+        self.blocks_selector_0.set_output_index(self.source_chooser)
 
     def get_samp_rate(self):
         return self.samp_rate
