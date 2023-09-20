@@ -255,7 +255,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [928, 220.0]
+    coordinate: [936, 224.0]
     rotation: 0
     state: enabled
 - name: note_0
