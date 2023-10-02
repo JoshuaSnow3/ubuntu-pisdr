@@ -81,7 +81,9 @@ class pisdr(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
+        self.squelch = squelch = -20
         self.freq = freq = 105.5e6
+        self.variable_qtgui_range_1 = variable_qtgui_range_1 = squelch
         self.variable_qtgui_range_0 = variable_qtgui_range_0 = freq
         self.source_chooser = source_chooser = 0
         self.samp_rate = samp_rate = 2048000
@@ -89,13 +91,16 @@ class pisdr(gr.top_block, Qt.QWidget):
         ##################################################
         # Blocks
         ##################################################
-        self._variable_qtgui_range_0_range = Range(1e6, 1e9, 10000, freq, 200)
-        self._variable_qtgui_range_0_win = RangeWidget(self._variable_qtgui_range_0_range, self.set_variable_qtgui_range_0, "'variable_qtgui_range_0'", "counter_slider", float, QtCore.Qt.Horizontal)
+        self._variable_qtgui_range_1_range = Range(-100, 0, 1, squelch, 200)
+        self._variable_qtgui_range_1_win = RangeWidget(self._variable_qtgui_range_1_range, self.set_variable_qtgui_range_1, "Squelch", "counter_slider", int, QtCore.Qt.Horizontal)
+        self.top_layout.addWidget(self._variable_qtgui_range_1_win)
+        self._variable_qtgui_range_0_range = Range(30e6, 300e6, 10000, freq, 200)
+        self._variable_qtgui_range_0_win = RangeWidget(self._variable_qtgui_range_0_range, self.set_variable_qtgui_range_0, "Frequency", "counter_slider", float, QtCore.Qt.Horizontal)
         self.top_layout.addWidget(self._variable_qtgui_range_0_win)
         # Create the options list
         self._source_chooser_options = [0, 1]
         # Create the labels list
-        self._source_chooser_labels = ['FM', 'Test Signals']
+        self._source_chooser_labels = ['FM', 'CW']
         # Create the combo box
         # Create the radio buttons
         self._source_chooser_group_box = Qt.QGroupBox("Source" + ": ")
@@ -153,10 +158,10 @@ class pisdr(gr.top_block, Qt.QWidget):
                 taps=[],
                 fractional_bw=0)
         self.qtgui_sink_x_0 = qtgui.sink_c(
-            1024, #fftsize
+            512, #fftsize
             window.WIN_BLACKMAN_hARRIS, #wintype
             variable_qtgui_range_0, #fc
-            100e6, #bw
+            samp_rate, #bw
             "", #name
             True, #plotfreq
             True, #plotwaterfall
@@ -170,13 +175,22 @@ class pisdr(gr.top_block, Qt.QWidget):
         self.qtgui_sink_x_0.enable_rf_freq(True)
 
         self.top_layout.addWidget(self._qtgui_sink_x_0_win)
-        self.low_pass_filter_0 = filter.fir_filter_ccf(
+        self.low_pass_filter_0_0 = filter.fir_filter_ccf(
             1,
             firdes.low_pass(
                 1,
                 samp_rate,
                 100e3,
-                1e6,
+                50e3,
+                window.WIN_HAMMING,
+                6.76))
+        self.low_pass_filter_0 = filter.fir_filter_ccf(
+            1,
+            firdes.low_pass(
+                1,
+                samp_rate,
+                samp_rate/4,
+                100e3,
                 window.WIN_HAMMING,
                 6.76))
         self.blocks_selector_0 = blocks.selector(gr.sizeof_gr_complex*1,0,source_chooser)
@@ -190,22 +204,27 @@ class pisdr(gr.top_block, Qt.QWidget):
         	quad_rate=500e3,
         	audio_decimation=10,
         )
+        self.analog_pwr_squelch_xx_0_0 = analog.pwr_squelch_cc(variable_qtgui_range_1, 1, 0, True)
+        self.analog_pwr_squelch_xx_0 = analog.pwr_squelch_cc(variable_qtgui_range_1, 1, 0, True)
 
 
         ##################################################
         # Connections
         ##################################################
+        self.connect((self.analog_pwr_squelch_xx_0, 0), (self.analog_wfm_rcv_0, 0))
+        self.connect((self.analog_pwr_squelch_xx_0_0, 0), (self.blocks_complex_to_float_0, 0))
         self.connect((self.analog_wfm_rcv_0, 0), (self.rational_resampler_xxx_1_0_0, 0))
         self.connect((self.blocks_complex_to_float_0, 0), (self.rational_resampler_xxx_1_0_0_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0_0, 0), (self.audio_sink_0_0, 0))
         self.connect((self.blocks_multiply_const_vxx_0_0_0, 0), (self.audio_sink_0_0_0, 0))
         self.connect((self.blocks_selector_0, 0), (self.rational_resampler_xxx_1_0, 0))
         self.connect((self.blocks_selector_0, 1), (self.rational_resampler_xxx_1_0_1, 0))
-        self.connect((self.low_pass_filter_0, 0), (self.analog_wfm_rcv_0, 0))
+        self.connect((self.low_pass_filter_0, 0), (self.analog_pwr_squelch_xx_0, 0))
+        self.connect((self.low_pass_filter_0_0, 0), (self.analog_pwr_squelch_xx_0_0, 0))
         self.connect((self.rational_resampler_xxx_1_0, 0), (self.low_pass_filter_0, 0))
         self.connect((self.rational_resampler_xxx_1_0_0, 0), (self.blocks_multiply_const_vxx_0_0, 0))
         self.connect((self.rational_resampler_xxx_1_0_0_0, 0), (self.blocks_multiply_const_vxx_0_0_0, 0))
-        self.connect((self.rational_resampler_xxx_1_0_1, 0), (self.blocks_complex_to_float_0, 0))
+        self.connect((self.rational_resampler_xxx_1_0_1, 0), (self.low_pass_filter_0_0, 0))
         self.connect((self.rtlsdr_source_0, 0), (self.blocks_selector_0, 0))
         self.connect((self.rtlsdr_source_0, 0), (self.qtgui_sink_x_0, 0))
 
@@ -218,6 +237,13 @@ class pisdr(gr.top_block, Qt.QWidget):
 
         event.accept()
 
+    def get_squelch(self):
+        return self.squelch
+
+    def set_squelch(self, squelch):
+        self.squelch = squelch
+        self.set_variable_qtgui_range_1(self.squelch)
+
     def get_freq(self):
         return self.freq
 
@@ -225,12 +251,20 @@ class pisdr(gr.top_block, Qt.QWidget):
         self.freq = freq
         self.set_variable_qtgui_range_0(self.freq)
 
+    def get_variable_qtgui_range_1(self):
+        return self.variable_qtgui_range_1
+
+    def set_variable_qtgui_range_1(self, variable_qtgui_range_1):
+        self.variable_qtgui_range_1 = variable_qtgui_range_1
+        self.analog_pwr_squelch_xx_0.set_threshold(self.variable_qtgui_range_1)
+        self.analog_pwr_squelch_xx_0_0.set_threshold(self.variable_qtgui_range_1)
+
     def get_variable_qtgui_range_0(self):
         return self.variable_qtgui_range_0
 
     def set_variable_qtgui_range_0(self, variable_qtgui_range_0):
         self.variable_qtgui_range_0 = variable_qtgui_range_0
-        self.qtgui_sink_x_0.set_frequency_range(self.variable_qtgui_range_0, 100e6)
+        self.qtgui_sink_x_0.set_frequency_range(self.variable_qtgui_range_0, self.samp_rate)
         self.rtlsdr_source_0.set_center_freq(self.variable_qtgui_range_0, 0)
 
     def get_source_chooser(self):
@@ -246,7 +280,9 @@ class pisdr(gr.top_block, Qt.QWidget):
 
     def set_samp_rate(self, samp_rate):
         self.samp_rate = samp_rate
-        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.samp_rate, 100e3, 1e6, window.WIN_HAMMING, 6.76))
+        self.low_pass_filter_0.set_taps(firdes.low_pass(1, self.samp_rate, self.samp_rate/4, 100e3, window.WIN_HAMMING, 6.76))
+        self.low_pass_filter_0_0.set_taps(firdes.low_pass(1, self.samp_rate, 100e3, 50e3, window.WIN_HAMMING, 6.76))
+        self.qtgui_sink_x_0.set_frequency_range(self.variable_qtgui_range_0, self.samp_rate)
         self.rtlsdr_source_0.set_sample_rate(self.samp_rate)
 
 

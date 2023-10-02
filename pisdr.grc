@@ -64,7 +64,7 @@ blocks:
     gui_hint: ''
     label: Source
     label0: FM
-    label1: Test Signals
+    label1: CW
     label2: ''
     label3: ''
     label4: ''
@@ -87,18 +87,30 @@ blocks:
     coordinate: [576, 20.0]
     rotation: 0
     state: true
+- name: squelch
+  id: variable
+  parameters:
+    comment: ''
+    value: '-20'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [752, 28.0]
+    rotation: 0
+    state: enabled
 - name: variable_qtgui_range_0
   id: variable_qtgui_range
   parameters:
     comment: ''
     gui_hint: ''
-    label: ''
+    label: Frequency
     min_len: '200'
     orient: QtCore.Qt.Horizontal
     rangeType: float
-    start: 1e6
+    start: 30e6
     step: '10000'
-    stop: 1e9
+    stop: 300e6
     value: freq
     widget: counter_slider
   states:
@@ -106,6 +118,67 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [408, 20.0]
+    rotation: 0
+    state: true
+- name: variable_qtgui_range_1
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: Squelch
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: int
+    start: '-100'
+    step: '1'
+    stop: '0'
+    value: squelch
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [864, 20.0]
+    rotation: 0
+    state: true
+- name: analog_pwr_squelch_xx_0
+  id: analog_pwr_squelch_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '1'
+    comment: ''
+    gate: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    ramp: '0'
+    threshold: variable_qtgui_range_1
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1104, 244.0]
+    rotation: 0
+    state: true
+- name: analog_pwr_squelch_xx_0_0
+  id: analog_pwr_squelch_xx
+  parameters:
+    affinity: ''
+    alias: ''
+    alpha: '1'
+    comment: ''
+    gate: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    ramp: '0'
+    threshold: variable_qtgui_range_1
+    type: complex
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1088, 636.0]
     rotation: 0
     state: true
 - name: analog_wfm_rcv_0
@@ -122,7 +195,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1160, 260.0]
+    coordinate: [1304, 268.0]
     rotation: 0
     state: enabled
 - name: audio_sink_0_0
@@ -139,7 +212,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1768, 268.0]
+    coordinate: [1912, 276.0]
     rotation: 0
     state: enabled
 - name: audio_sink_0_0_0
@@ -156,7 +229,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1760, 636.0]
+    coordinate: [1880, 644.0]
     rotation: 0
     state: enabled
 - name: blocks_complex_to_float_0
@@ -172,7 +245,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1152, 640.0]
+    coordinate: [1272, 648.0]
     rotation: 0
     state: true
 - name: blocks_multiply_const_vxx_0_0
@@ -190,7 +263,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1568, 268.0]
+    coordinate: [1712, 276.0]
     rotation: 0
     state: enabled
 - name: blocks_multiply_const_vxx_0_0_0
@@ -208,7 +281,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1584, 636.0]
+    coordinate: [1704, 644.0]
     rotation: 0
     state: enabled
 - name: blocks_selector_0
@@ -241,6 +314,30 @@ blocks:
     alias: ''
     beta: '6.76'
     comment: ''
+    cutoff_freq: samp_rate/4
+    decim: '1'
+    gain: '1'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    type: fir_filter_ccf
+    width: 100e3
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [896, 220.0]
+    rotation: 0
+    state: enabled
+- name: low_pass_filter_0_0
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: ''
     cutoff_freq: 100e3
     decim: '1'
     gain: '1'
@@ -249,13 +346,13 @@ blocks:
     minoutbuf: '0'
     samp_rate: samp_rate
     type: fir_filter_ccf
-    width: 1e6
+    width: 50e3
     win: window.WIN_HAMMING
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [936, 224.0]
+    coordinate: [888, 612.0]
     rotation: 0
     state: enabled
 - name: note_0
@@ -276,10 +373,10 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    bw: 100e6
+    bw: samp_rate
     comment: ''
     fc: variable_qtgui_range_0
-    fftsize: '1024'
+    fftsize: '512'
     gui_hint: ''
     maxoutbuf: '0'
     minoutbuf: '0'
@@ -297,7 +394,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [376, 220.0]
+    coordinate: [384, 220.0]
     rotation: 0
     state: true
 - name: rational_resampler_xxx_1_0
@@ -317,7 +414,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [728, 244.0]
+    coordinate: [680, 244.0]
     rotation: 0
     state: enabled
 - name: rational_resampler_xxx_1_0_0
@@ -337,7 +434,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1376, 244.0]
+    coordinate: [1520, 252.0]
     rotation: 0
     state: enabled
 - name: rational_resampler_xxx_1_0_0_0
@@ -357,7 +454,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1376, 612.0]
+    coordinate: [1496, 620.0]
     rotation: 0
     state: enabled
 - name: rational_resampler_xxx_1_0_1
@@ -377,7 +474,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [688, 620.0]
+    coordinate: [664, 636.0]
     rotation: 0
     state: enabled
 - name: rtlsdr_source_0
@@ -739,17 +836,20 @@ blocks:
     state: enabled
 
 connections:
+- [analog_pwr_squelch_xx_0, '0', analog_wfm_rcv_0, '0']
+- [analog_pwr_squelch_xx_0_0, '0', blocks_complex_to_float_0, '0']
 - [analog_wfm_rcv_0, '0', rational_resampler_xxx_1_0_0, '0']
 - [blocks_complex_to_float_0, '0', rational_resampler_xxx_1_0_0_0, '0']
 - [blocks_multiply_const_vxx_0_0, '0', audio_sink_0_0, '0']
 - [blocks_multiply_const_vxx_0_0_0, '0', audio_sink_0_0_0, '0']
 - [blocks_selector_0, '0', rational_resampler_xxx_1_0, '0']
 - [blocks_selector_0, '1', rational_resampler_xxx_1_0_1, '0']
-- [low_pass_filter_0, '0', analog_wfm_rcv_0, '0']
+- [low_pass_filter_0, '0', analog_pwr_squelch_xx_0, '0']
+- [low_pass_filter_0_0, '0', analog_pwr_squelch_xx_0_0, '0']
 - [rational_resampler_xxx_1_0, '0', low_pass_filter_0, '0']
 - [rational_resampler_xxx_1_0_0, '0', blocks_multiply_const_vxx_0_0, '0']
 - [rational_resampler_xxx_1_0_0_0, '0', blocks_multiply_const_vxx_0_0_0, '0']
-- [rational_resampler_xxx_1_0_1, '0', blocks_complex_to_float_0, '0']
+- [rational_resampler_xxx_1_0_1, '0', low_pass_filter_0_0, '0']
 - [rtlsdr_source_0, '0', blocks_selector_0, '0']
 - [rtlsdr_source_0, '0', qtgui_sink_x_0, '0']
 
