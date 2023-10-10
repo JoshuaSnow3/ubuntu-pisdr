@@ -22,6 +22,7 @@ if __name__ == '__main__':
 
 from PyQt5 import Qt
 from PyQt5.QtCore import QObject, pyqtSlot
+from gnuradio import eng_notation
 from gnuradio import qtgui
 from gnuradio.filter import firdes
 import sip
@@ -35,7 +36,6 @@ import sys
 import signal
 from argparse import ArgumentParser
 from gnuradio.eng_arg import eng_float, intx
-from gnuradio import eng_notation
 from gnuradio.qtgui import Range, RangeWidget
 from PyQt5 import QtCore
 import osmosdr
@@ -81,10 +81,11 @@ class pisdr(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
-        self.squelch = squelch = -20
         self.freq = freq = 105.5e6
-        self.variable_qtgui_range_1 = variable_qtgui_range_1 = squelch
         self.variable_qtgui_range_0 = variable_qtgui_range_0 = freq
+        self.squelch = squelch = -20
+        self.variable_qtgui_range_1 = variable_qtgui_range_1 = squelch
+        self.variable_qtgui_label_0 = variable_qtgui_label_0 = variable_qtgui_range_0 / 1e6
         self.source_chooser = source_chooser = 0
         self.samp_rate = samp_rate = 2048000
 
@@ -93,10 +94,18 @@ class pisdr(gr.top_block, Qt.QWidget):
         ##################################################
         self._variable_qtgui_range_1_range = Range(-100, 0, 1, squelch, 200)
         self._variable_qtgui_range_1_win = RangeWidget(self._variable_qtgui_range_1_range, self.set_variable_qtgui_range_1, "Squelch", "counter_slider", int, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._variable_qtgui_range_1_win)
+        self.top_grid_layout.addWidget(self._variable_qtgui_range_1_win, 0, 2, 1, 1)
+        for r in range(0, 1):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(2, 3):
+            self.top_grid_layout.setColumnStretch(c, 1)
         self._variable_qtgui_range_0_range = Range(30e6, 300e6, 10000, freq, 200)
-        self._variable_qtgui_range_0_win = RangeWidget(self._variable_qtgui_range_0_range, self.set_variable_qtgui_range_0, "Frequency", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._variable_qtgui_range_0_win)
+        self._variable_qtgui_range_0_win = RangeWidget(self._variable_qtgui_range_0_range, self.set_variable_qtgui_range_0, "Frequency", "slider", float, QtCore.Qt.Horizontal)
+        self.top_grid_layout.addWidget(self._variable_qtgui_range_0_win, 0, 0, 1, 1)
+        for r in range(0, 1):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(0, 1):
+            self.top_grid_layout.setColumnStretch(c, 1)
         # Create the options list
         self._source_chooser_options = [0, 1]
         # Create the labels list
@@ -122,6 +131,21 @@ class pisdr(gr.top_block, Qt.QWidget):
         self._source_chooser_button_group.buttonClicked[int].connect(
             lambda i: self.set_source_chooser(self._source_chooser_options[i]))
         self.top_layout.addWidget(self._source_chooser_group_box)
+        self._variable_qtgui_label_0_tool_bar = Qt.QToolBar(self)
+
+        if lambda x: f'{x:5f}':
+            self._variable_qtgui_label_0_formatter = lambda x: f'{x:5f}'
+        else:
+            self._variable_qtgui_label_0_formatter = lambda x: eng_notation.num_to_str(x)
+
+        self._variable_qtgui_label_0_tool_bar.addWidget(Qt.QLabel("Frequency (MHz): "))
+        self._variable_qtgui_label_0_label = Qt.QLabel(str(self._variable_qtgui_label_0_formatter(self.variable_qtgui_label_0)))
+        self._variable_qtgui_label_0_tool_bar.addWidget(self._variable_qtgui_label_0_label)
+        self.top_grid_layout.addWidget(self._variable_qtgui_label_0_tool_bar, 0, 1, 1, 1)
+        for r in range(0, 1):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(1, 2):
+            self.top_grid_layout.setColumnStretch(c, 1)
         self.rtlsdr_source_0 = osmosdr.source(
             args="numchan=" + str(1) + " " + ""
         )
@@ -237,19 +261,28 @@ class pisdr(gr.top_block, Qt.QWidget):
 
         event.accept()
 
-    def get_squelch(self):
-        return self.squelch
-
-    def set_squelch(self, squelch):
-        self.squelch = squelch
-        self.set_variable_qtgui_range_1(self.squelch)
-
     def get_freq(self):
         return self.freq
 
     def set_freq(self, freq):
         self.freq = freq
         self.set_variable_qtgui_range_0(self.freq)
+
+    def get_variable_qtgui_range_0(self):
+        return self.variable_qtgui_range_0
+
+    def set_variable_qtgui_range_0(self, variable_qtgui_range_0):
+        self.variable_qtgui_range_0 = variable_qtgui_range_0
+        self.set_variable_qtgui_label_0(self.variable_qtgui_range_0 / 1e6)
+        self.qtgui_sink_x_0.set_frequency_range(self.variable_qtgui_range_0, self.samp_rate)
+        self.rtlsdr_source_0.set_center_freq(self.variable_qtgui_range_0, 0)
+
+    def get_squelch(self):
+        return self.squelch
+
+    def set_squelch(self, squelch):
+        self.squelch = squelch
+        self.set_variable_qtgui_range_1(self.squelch)
 
     def get_variable_qtgui_range_1(self):
         return self.variable_qtgui_range_1
@@ -259,13 +292,12 @@ class pisdr(gr.top_block, Qt.QWidget):
         self.analog_pwr_squelch_xx_0.set_threshold(self.variable_qtgui_range_1)
         self.analog_pwr_squelch_xx_0_0.set_threshold(self.variable_qtgui_range_1)
 
-    def get_variable_qtgui_range_0(self):
-        return self.variable_qtgui_range_0
+    def get_variable_qtgui_label_0(self):
+        return self.variable_qtgui_label_0
 
-    def set_variable_qtgui_range_0(self, variable_qtgui_range_0):
-        self.variable_qtgui_range_0 = variable_qtgui_range_0
-        self.qtgui_sink_x_0.set_frequency_range(self.variable_qtgui_range_0, self.samp_rate)
-        self.rtlsdr_source_0.set_center_freq(self.variable_qtgui_range_0, 0)
+    def set_variable_qtgui_label_0(self, variable_qtgui_label_0):
+        self.variable_qtgui_label_0 = variable_qtgui_label_0
+        Qt.QMetaObject.invokeMethod(self._variable_qtgui_label_0_label, "setText", Qt.Q_ARG("QString", str(self._variable_qtgui_label_0_formatter(self.variable_qtgui_label_0))))
 
     def get_source_chooser(self):
         return self.source_chooser

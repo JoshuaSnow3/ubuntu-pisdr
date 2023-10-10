@@ -99,11 +99,27 @@ blocks:
     coordinate: [752, 28.0]
     rotation: 0
     state: enabled
+- name: variable_qtgui_label_0
+  id: variable_qtgui_label
+  parameters:
+    comment: ''
+    formatter: 'lambda x: f''{x:5f}'''
+    gui_hint: 0,1,1,1
+    label: 'Frequency (MHz): '
+    type: real
+    value: variable_qtgui_range_0 / 1e6
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [408, 148.0]
+    rotation: 0
+    state: true
 - name: variable_qtgui_range_0
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: ''
+    gui_hint: 0,0,1,1
     label: Frequency
     min_len: '200'
     orient: QtCore.Qt.Horizontal
@@ -112,7 +128,7 @@ blocks:
     step: '10000'
     stop: 300e6
     value: freq
-    widget: counter_slider
+    widget: slider
   states:
     bus_sink: false
     bus_source: false
@@ -124,7 +140,7 @@ blocks:
   id: variable_qtgui_range
   parameters:
     comment: ''
-    gui_hint: ''
+    gui_hint: 0,2,1,1
     label: Squelch
     min_len: '200'
     orient: QtCore.Qt.Horizontal
