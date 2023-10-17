@@ -33,27 +33,6 @@ options:
     state: enabled
 
 blocks:
-- name: bandwidth
-  id: variable_qtgui_range
-  parameters:
-    comment: ''
-    gui_hint: 1,0,1,1
-    label: Bandwidth
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '1'
-    step: '10'
-    stop: 2.5e6
-    value: samp_rate
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [464, 268.0]
-    rotation: 0
-    state: true
 - name: freq
   id: variable
   parameters:
