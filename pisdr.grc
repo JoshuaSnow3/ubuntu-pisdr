@@ -33,11 +33,41 @@ options:
     state: enabled
 
 blocks:
+- name: filter_test
+  id: variable_qtgui_chooser
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: Test Filters
+    label0: 'Off'
+    label1: Low Pass
+    label2: High Pass
+    label3: Band Reject
+    label4: Band Reject
+    labels: '[]'
+    num_opts: '4'
+    option0: '0'
+    option1: '1'
+    option2: '2'
+    option3: '3'
+    option4: '4'
+    options: '[0, 1, 2]'
+    orient: Qt.QVBoxLayout
+    type: int
+    value: '0'
+    widget: radio_buttons
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1032, 28.0]
+    rotation: 0
+    state: true
 - name: freq
   id: variable
   parameters:
     comment: ''
-    value: variable_qtgui_range_0
+    value: freqrange
   states:
     bus_sink: false
     bus_source: false
@@ -45,6 +75,69 @@ blocks:
     coordinate: [272, 84.0]
     rotation: 0
     state: enabled
+- name: freqrange
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: 0,0,1,1
+    label: Frequency
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '10'
+    step: '0.01'
+    stop: '800'
+    value: '105.5'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [464, 20.0]
+    rotation: 0
+    state: true
+- name: high_cutoff
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: High Cutoff Freq
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '.1'
+    step: '0.048'
+    stop: '1.2'
+    value: '.6'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [888, 156.0]
+    rotation: 0
+    state: true
+- name: low_cutoff
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: Low Cutoff Freq
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '.1'
+    step: '0.048'
+    stop: '1.2'
+    value: '.6'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [888, 20.0]
+    rotation: 0
+    state: true
 - name: samp_rate
   id: variable
   parameters:
@@ -84,7 +177,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [736, 20.0]
+    coordinate: [8, 108.0]
     rotation: 0
     state: true
 - name: squelch
@@ -96,9 +189,42 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1128, 20.0]
+    coordinate: [1368, 28.0]
     rotation: 0
     state: enabled
+- name: testfreq
+  id: variable
+  parameters:
+    comment: ''
+    value: testfreqrange
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [272, 164.0]
+    rotation: 0
+    state: enabled
+- name: testfreqrange
+  id: variable_qtgui_range
+  parameters:
+    comment: ''
+    gui_hint: ''
+    label: Test Frequency
+    min_len: '200'
+    orient: QtCore.Qt.Horizontal
+    rangeType: float
+    start: '0'
+    step: '0.0001'
+    stop: '1.2'
+    value: '0.6'
+    widget: counter_slider
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [600, 20.0]
+    rotation: 0
+    state: true
 - name: variable_qtgui_label_0
   id: variable_qtgui_label
   parameters:
@@ -107,33 +233,12 @@ blocks:
     gui_hint: 0,1,1,1
     label: 'Frequency (MHz): '
     type: real
-    value: variable_qtgui_range_0 / 1e6
+    value: freqrange / 1e6
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
     coordinate: [464, 148.0]
-    rotation: 0
-    state: true
-- name: variable_qtgui_range_0
-  id: variable_qtgui_range
-  parameters:
-    comment: ''
-    gui_hint: 0,0,1,1
-    label: Frequency
-    min_len: '200'
-    orient: QtCore.Qt.Horizontal
-    rangeType: float
-    start: '10'
-    step: '0.01'
-    stop: '800'
-    value: '105.5'
-    widget: counter_slider
-  states:
-    bus_sink: false
-    bus_source: false
-    bus_structure: null
-    coordinate: [464, 20.0]
     rotation: 0
     state: true
 - name: variable_qtgui_range_1
@@ -154,7 +259,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1216, 20.0]
+    coordinate: [1456, 28.0]
     rotation: 0
     state: true
 - name: analog_am_demod_cf_0
@@ -205,7 +310,7 @@ blocks:
     max_dev: 5e3
     maxoutbuf: '0'
     minoutbuf: '0'
-    quad_rate: '480000'
+    quad_rate: '240000'
     tau: 75e-6
   states:
     bus_sink: false
@@ -281,7 +386,7 @@ blocks:
     alias: ''
     amp: '1'
     comment: ''
-    freq: freq * 1e6
+    freq: (testfreq * 1e6)
     maxoutbuf: '0'
     minoutbuf: '0'
     offset: '0'
@@ -293,8 +398,8 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [92.0, 1784]
-    rotation: 270
+    coordinate: [136, 2028.0]
+    rotation: 0
     state: true
 - name: analog_wfm_rcv_0
   id: analog_wfm_rcv
@@ -398,6 +503,56 @@ blocks:
     coordinate: [2040, 1212.0]
     rotation: 0
     state: disabled
+- name: band_pass_filter_0
+  id: band_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: ''
+    decim: '3'
+    gain: '1'
+    high_cutoff_freq: 6e3
+    interp: '1'
+    low_cutoff_freq: 3e3
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    type: fir_filter_ccf
+    width: '200'
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [824, 708.0]
+    rotation: 0
+    state: true
+- name: band_reject_filter_0
+  id: band_reject_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: ''
+    decim: '1'
+    gain: '1'
+    high_cutoff_freq: (high_cutoff * 1e6)
+    interp: '1'
+    low_cutoff_freq: (low_cutoff * 1e6)
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    type: fir_filter_ccf
+    width: 1e3
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1384, 1988.0]
+    rotation: 0
+    state: true
 - name: blocks_complex_to_float_0
   id: blocks_complex_to_float
   parameters:
@@ -412,6 +567,20 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [1424, 1480.0]
+    rotation: 0
+    state: true
+- name: blocks_message_debug_0
+  id: blocks_message_debug
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    en_uvec: 'True'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [2128, 2008.0]
     rotation: 0
     state: true
 - name: blocks_multiply_const_vxx_0_0
@@ -456,7 +625,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    const: '1'
+    const: 5e-1
     maxoutbuf: '0'
     minoutbuf: '0'
     type: float
@@ -538,6 +707,42 @@ blocks:
     coordinate: [776, 1128.0]
     rotation: 0
     state: true
+- name: blocks_null_sink_1
+  id: blocks_null_sink
+  parameters:
+    affinity: ''
+    alias: ''
+    bus_structure_sink: '[[0,],]'
+    comment: ''
+    num_inputs: '1'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1896, 2344.0]
+    rotation: 0
+    state: true
+- name: blocks_null_source_0
+  id: blocks_null_source
+  parameters:
+    affinity: ''
+    alias: ''
+    bus_structure_source: '[[0,],]'
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_outputs: '1'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1160, 2360.0]
+    rotation: 0
+    state: true
 - name: blocks_selector_0
   id: blocks_selector
   parameters:
@@ -581,9 +786,55 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [504, 1536.0]
+    coordinate: [600, 1616.0]
     rotation: 0
     state: enabled
+- name: blocks_selector_1
+  id: blocks_selector
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    enabled: 'True'
+    input_index: '0'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '1'
+    num_outputs: '4'
+    output_index: filter_test
+    showports: 'True'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [848, 1632.0]
+    rotation: 0
+    state: true
+- name: blocks_selector_1_0
+  id: blocks_selector
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    enabled: 'True'
+    input_index: filter_test
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    num_inputs: '4'
+    num_outputs: '1'
+    output_index: '0'
+    showports: 'True'
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1664, 1632.0]
+    rotation: 0
+    state: true
 - name: blocks_throttle_0
   id: blocks_throttle
   parameters:
@@ -600,7 +851,118 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [240, 1988.0]
+    coordinate: [368, 2068.0]
+    rotation: 0
+    state: true
+- name: blocks_throttle_1
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate /16
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1712, 2340.0]
+    rotation: 0
+    state: true
+- name: blocks_throttle_1_0
+  id: blocks_throttle
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    ignoretag: 'True'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samples_per_second: samp_rate / 16
+    type: complex
+    vlen: '1'
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1320, 2356.0]
+    rotation: 0
+    state: true
+- name: epy_block_0
+  id: epy_block
+  parameters:
+    _source_code: "\"\"\"\nEmbedded Python Blocks:\n\nEach time this file is saved,\
+      \ GRC will instantiate the first class it finds\nto get ports and parameters\
+      \ of your block. The arguments to __init__  will\nbe the parameters. All of\
+      \ them are required to have default values!\n\"\"\"\n\nimport numpy as np\n\
+      from gnuradio import gr\nimport pmt\n\n\nclass blk(gr.sync_block):  # other\
+      \ base classes are basic_block, decim_block, interp_block\n\n    def __init__(self,\
+      \ real_freq=105.4, test_freq=1, source=0):  # only default arguments here\n\
+      \        \"\"\"arguments to this function show up as parameters in GRC\"\"\"\
+      \n        gr.sync_block.__init__(\n            self,\n            name='Source\
+      \ or Test block',   # will show up in GRC\n            in_sig=[np.complex64],\n\
+      \            out_sig=[np.complex64]\n        )\n        # if an attribute with\
+      \ the same name as a parameter is found,\n        # a callback is registered\
+      \ (properties work, too).\n        self.real_freq = real_freq\n        self.test_freq\
+      \ = test_freq\n        self.source = source\n        self.portName = 'freq'\n\
+      \        self.message_port_register_out(pmt.intern(self.portName))\n\n    def\
+      \ work(self, input_items, output_items):\n        if (self.source < 5):\n  \
+      \          #PMT_msg = pmt.to_float(self.real_freq)\n            PMT_msg = pmt.cons(pmt.intern('freq'),\
+      \ pmt.from_float(self.real_freq))\n            output_items[0][:] = self.real_freq\n\
+      \            self.message_port_pub(pmt.intern(self.portName), PMT_msg)\n   \
+      \     else:\n            #PMT_msg = pmt.to_float(self.test_freq)\n         \
+      \   PMT_msg = pmt.cons(pmt.intern('freq'), pmt.from_float(self.test_freq))\n\
+      \            output_items[0][:] = self.test_freq\n            self.message_port_pub(pmt.intern(self.portName),\
+      \ PMT_msg)\n        #PMT_msg = pmt.from_float(self.test_freq)\n        #self.message_port_pub(pmt.intern('freq'),\
+      \ pmt.cons(pmt.intern('freq'), pmt.from_double(self.test_freq)))\n        #gr.log.error(\"\
+      Unable to print: %s\" % repr(e)) \n        output_items[0][:] = input_items[0]\n\
+      \        #self.message_port_pub(pmt.intern(self.portName), PMT_msg)\n      \
+      \  return len(output_items[0])\n"
+    affinity: ''
+    alias: ''
+    comment: ''
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    real_freq: freq * 1e6
+    source: source_chooser
+    test_freq: '0'
+  states:
+    _io_cache: ('Source or Test block', 'blk', [('real_freq', '105.4'), ('test_freq',
+      '1'), ('source', '0')], [('0', 'complex', 1)], [('0', 'complex', 1), ('freq',
+      'message', 1)], 'arguments to this function show up as parameters in GRC', ['real_freq',
+      'source', 'test_freq'])
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1496, 2340.0]
+    rotation: 0
+    state: true
+- name: high_pass_filter_0
+  id: high_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: ''
+    cutoff_freq: (low_cutoff * 1e6)
+    decim: '1'
+    gain: '1'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    type: fir_filter_ccf
+    width: 1e3
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1384, 1844.0]
     rotation: 0
     state: true
 - name: low_pass_filter_0
@@ -658,7 +1020,7 @@ blocks:
     alias: ''
     beta: '6.76'
     comment: ''
-    cutoff_freq: samp_rate/4
+    cutoff_freq: samp_rate/8
     decim: '1'
     gain: '1'
     interp: '1'
@@ -666,15 +1028,15 @@ blocks:
     minoutbuf: '0'
     samp_rate: samp_rate
     type: fir_filter_ccf
-    width: samp_rate/8
+    width: samp_rate/16
     win: window.WIN_HAMMING
   states:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [1032, 708.0]
+    coordinate: [1096, 348.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: low_pass_filter_0_1_0_0
   id: low_pass_filter
   parameters:
@@ -723,6 +1085,30 @@ blocks:
     coordinate: [1024, 932.0]
     rotation: 0
     state: enabled
+- name: low_pass_filter_1
+  id: low_pass_filter
+  parameters:
+    affinity: ''
+    alias: ''
+    beta: '6.76'
+    comment: ''
+    cutoff_freq: (high_cutoff * 1e6)
+    decim: '1'
+    gain: '1'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    samp_rate: samp_rate
+    type: fir_filter_ccf
+    width: 1e3
+    win: window.WIN_HAMMING
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1384, 1700.0]
+    rotation: 0
+    state: true
 - name: note_0
   id: note
   parameters:
@@ -759,7 +1145,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [848, 836.0]
+    coordinate: [848, 876.0]
     rotation: 0
     state: true
 - name: note_0_1_0
@@ -793,15 +1179,15 @@ blocks:
   parameters:
     affinity: ''
     alias: ''
-    bw: bandwidth
+    bw: samp_rate
     comment: ''
-    fc: freq * 1e6
+    fc: '0'
     fftsize: '512'
     gui_hint: ''
     maxoutbuf: '0'
     minoutbuf: '0'
-    name: '""'
-    plotconst: 'False'
+    name: '"Plot"'
+    plotconst: 'True'
     plotfreq: 'True'
     plottime: 'True'
     plotwaterfall: 'True'
@@ -814,7 +1200,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [752, 1900.0]
+    coordinate: [1944, 1620.0]
     rotation: 0
     state: enabled
 - name: rational_resampler_xxx_1_0
@@ -843,7 +1229,7 @@ blocks:
     affinity: ''
     alias: ''
     comment: ''
-    decim: '5'
+    decim: '3'
     fbw: '0'
     interp: '1'
     maxoutbuf: '0'
@@ -854,9 +1240,9 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [816, 732.0]
+    coordinate: [848, 372.0]
     rotation: 0
-    state: enabled
+    state: disabled
 - name: rational_resampler_xxx_1_0_0_0
   id: rational_resampler_xxx
   parameters:
@@ -885,7 +1271,7 @@ blocks:
     comment: ''
     decim: '1'
     fbw: '0'
-    interp: '70'
+    interp: '1'
     maxoutbuf: '0'
     minoutbuf: '0'
     taps: '[]'
@@ -894,7 +1280,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [372.0, 1808]
+    coordinate: [500.0, 1872]
     rotation: 90
     state: enabled
 - name: rational_resampler_xxx_1_0_0_0_1
@@ -955,6 +1341,66 @@ blocks:
     bus_source: false
     bus_structure: null
     coordinate: [816, 1468.0]
+    rotation: 0
+    state: enabled
+- name: rational_resampler_xxx_1_0_2
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '1'
+    fbw: '0'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1184, 1724.0]
+    rotation: 0
+    state: enabled
+- name: rational_resampler_xxx_1_0_2_0
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '1'
+    fbw: '0'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1184, 1868.0]
+    rotation: 0
+    state: enabled
+- name: rational_resampler_xxx_1_0_2_1
+  id: rational_resampler_xxx
+  parameters:
+    affinity: ''
+    alias: ''
+    comment: ''
+    decim: '1'
+    fbw: '0'
+    interp: '1'
+    maxoutbuf: '0'
+    minoutbuf: '0'
+    taps: '[]'
+    type: ccf
+  states:
+    bus_sink: false
+    bus_source: false
+    bus_structure: null
+    coordinate: [1184, 2020.0]
     rotation: 0
     state: enabled
 - name: rtlsdr_source_0
@@ -1311,7 +1757,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [144, 836.0]
+    coordinate: [152, 868.0]
     rotation: 0
     state: enabled
 
@@ -1324,26 +1770,39 @@ connections:
 - [analog_pwr_squelch_xx_0_1, '0', analog_nbfm_rx_0, '0']
 - [analog_sig_source_x_0, '0', blocks_throttle_0, '0']
 - [analog_wfm_rcv_0, '0', blocks_multiply_const_vxx_0_0, '0']
+- [band_pass_filter_0, '0', analog_pwr_squelch_xx_0_1, '0']
+- [band_reject_filter_0, '0', blocks_selector_1_0, '3']
 - [blocks_complex_to_float_0, '0', blocks_multiply_const_vxx_0_0_0, '0']
 - [blocks_multiply_const_vxx_0_0, '0', audio_sink_0_0, '0']
 - [blocks_multiply_const_vxx_0_0_0, '0', audio_sink_0_0_0, '0']
 - [blocks_multiply_const_vxx_0_0_1, '0', audio_sink_0_0_1, '0']
 - [blocks_multiply_const_vxx_0_0_1_0, '0', audio_sink_0_0_1_0, '0']
 - [blocks_multiply_const_vxx_0_0_1_0_0, '0', audio_sink_0_0_1_0_0, '0']
+- [blocks_null_source_0, '0', blocks_throttle_1_0, '0']
 - [blocks_selector_0, '0', rational_resampler_xxx_1_0, '0']
-- [blocks_selector_0, '1', rational_resampler_xxx_1_0_0, '0']
+- [blocks_selector_0, '1', band_pass_filter_0, '0']
 - [blocks_selector_0, '2', rational_resampler_xxx_1_0_0_0, '0']
 - [blocks_selector_0, '3', blocks_null_sink_0_0, '0']
 - [blocks_selector_0, '3', rational_resampler_xxx_1_0_0_0_1, '0']
 - [blocks_selector_0, '4', rational_resampler_xxx_1_0_1, '0']
 - [blocks_selector_0, '5', blocks_null_sink_0, '0']
-- [blocks_selector_0_0, '0', qtgui_sink_x_0, '0']
+- [blocks_selector_0_0, '0', blocks_selector_1, '0']
+- [blocks_selector_1, '0', blocks_selector_1_0, '0']
+- [blocks_selector_1, '1', rational_resampler_xxx_1_0_2, '0']
+- [blocks_selector_1, '2', rational_resampler_xxx_1_0_2_0, '0']
+- [blocks_selector_1, '3', rational_resampler_xxx_1_0_2_1, '0']
+- [blocks_selector_1_0, '0', qtgui_sink_x_0, '0']
 - [blocks_throttle_0, '0', rational_resampler_xxx_1_0_0_0_0, '0']
+- [blocks_throttle_1, '0', blocks_null_sink_1, '0']
+- [blocks_throttle_1_0, '0', epy_block_0, '0']
+- [epy_block_0, '0', blocks_throttle_1, '0']
+- [epy_block_0, freq, qtgui_sink_x_0, freq]
+- [high_pass_filter_0, '0', blocks_selector_1_0, '2']
 - [low_pass_filter_0, '0', analog_pwr_squelch_xx_0, '0']
 - [low_pass_filter_0_0, '0', analog_pwr_squelch_xx_0_0, '0']
-- [low_pass_filter_0_1, '0', analog_pwr_squelch_xx_0_1, '0']
 - [low_pass_filter_0_1_0_0, '0', analog_am_demod_cf_0_0, '0']
 - [low_pass_filter_0_1_1, '0', analog_am_demod_cf_0, '0']
+- [low_pass_filter_1, '0', blocks_selector_1_0, '1']
 - [rational_resampler_xxx_1_0, '0', low_pass_filter_0, '0']
 - [rational_resampler_xxx_1_0_0, '0', low_pass_filter_0_1, '0']
 - [rational_resampler_xxx_1_0_0_0, '0', low_pass_filter_0_1_1, '0']
@@ -1351,6 +1810,9 @@ connections:
 - [rational_resampler_xxx_1_0_0_0_1, '0', low_pass_filter_0_1_0_0, '0']
 - [rational_resampler_xxx_1_0_0_0_2, '0', blocks_multiply_const_vxx_0_0_1_0, '0']
 - [rational_resampler_xxx_1_0_1, '0', low_pass_filter_0_0, '0']
+- [rational_resampler_xxx_1_0_2, '0', low_pass_filter_1, '0']
+- [rational_resampler_xxx_1_0_2_0, '0', high_pass_filter_0, '0']
+- [rational_resampler_xxx_1_0_2_1, '0', band_reject_filter_0, '0']
 - [rtlsdr_source_0, '0', blocks_selector_0, '0']
 - [rtlsdr_source_0, '0', blocks_selector_0_0, '0']
 - [rtlsdr_source_0, '0', blocks_selector_0_0, '1']
