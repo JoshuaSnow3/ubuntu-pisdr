@@ -41,6 +41,7 @@ from PyQt5 import QtCore
 import osmosdr
 import time
 import pisdr_epy_block_0 as epy_block_0  # embedded python block
+import pisdr_epy_block_2 as epy_block_2  # embedded python block
 
 
 
@@ -82,11 +83,12 @@ class pisdr(gr.top_block, Qt.QWidget):
         ##################################################
         # Variables
         ##################################################
+        self.freqrange_default = freqrange_default = 105500000
         self.testfreqrange = testfreqrange = 0.6
         self.squelch = squelch = -20
-        self.freqrange = freqrange = 105.5
+        self.freqrange = freqrange = freqrange_default / 1e6
         self.variable_qtgui_range_1 = variable_qtgui_range_1 = squelch
-        self.variable_qtgui_label_0 = variable_qtgui_label_0 = freqrange / 1e6
+        self.variable_qtgui_label_0 = variable_qtgui_label_0 = freqrange
         self.testfreq = testfreq = testfreqrange
         self.source_chooser = source_chooser = 0
         self.samp_rate = samp_rate = 2.4e6
@@ -100,10 +102,10 @@ class pisdr(gr.top_block, Qt.QWidget):
         ##################################################
         self._variable_qtgui_range_1_range = Range(-100, 0, 1, squelch, 200)
         self._variable_qtgui_range_1_win = RangeWidget(self._variable_qtgui_range_1_range, self.set_variable_qtgui_range_1, "Squelch", "counter_slider", int, QtCore.Qt.Horizontal)
-        self.top_grid_layout.addWidget(self._variable_qtgui_range_1_win, 0, 2, 1, 1)
-        for r in range(0, 1):
+        self.top_grid_layout.addWidget(self._variable_qtgui_range_1_win, 8, 0, 1, 9)
+        for r in range(8, 9):
             self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(2, 3):
+        for c in range(0, 9):
             self.top_grid_layout.setColumnStretch(c, 1)
         # Create the options list
         self._source_chooser_options = [0, 1, 2, 3, 4, 5]
@@ -120,13 +122,25 @@ class pisdr(gr.top_block, Qt.QWidget):
         self._source_chooser_combo_box.currentIndexChanged.connect(
             lambda i: self.set_source_chooser(self._source_chooser_options[i]))
         # Create the radio buttons
-        self.top_layout.addWidget(self._source_chooser_tool_bar)
+        self.top_grid_layout.addWidget(self._source_chooser_tool_bar, 3, 0, 1, 1)
+        for r in range(3, 4):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(0, 1):
+            self.top_grid_layout.setColumnStretch(c, 1)
         self._low_cutoff_range = Range(.1, 1.2, 0.048, .6, 200)
         self._low_cutoff_win = RangeWidget(self._low_cutoff_range, self.set_low_cutoff, "Low Cutoff Freq", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._low_cutoff_win)
+        self.top_grid_layout.addWidget(self._low_cutoff_win, 6, 0, 1, 9)
+        for r in range(6, 7):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(0, 9):
+            self.top_grid_layout.setColumnStretch(c, 1)
         self._high_cutoff_range = Range(.1, 1.2, 0.048, .6, 200)
         self._high_cutoff_win = RangeWidget(self._high_cutoff_range, self.set_high_cutoff, "High Cutoff Freq", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._high_cutoff_win)
+        self.top_grid_layout.addWidget(self._high_cutoff_win, 7, 0, 1, 9)
+        for r in range(7, 8):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(0, 9):
+            self.top_grid_layout.setColumnStretch(c, 1)
         # Create the options list
         self._filter_test_options = [0, 1, 2, 3]
         # Create the labels list
@@ -151,7 +165,11 @@ class pisdr(gr.top_block, Qt.QWidget):
         self._filter_test_callback(self.filter_test)
         self._filter_test_button_group.buttonClicked[int].connect(
             lambda i: self.set_filter_test(self._filter_test_options[i]))
-        self.top_layout.addWidget(self._filter_test_group_box)
+        self.top_grid_layout.addWidget(self._filter_test_group_box, 2, 0, 1, 1)
+        for r in range(2, 3):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(0, 1):
+            self.top_grid_layout.setColumnStretch(c, 1)
         self._variable_qtgui_label_0_tool_bar = Qt.QToolBar(self)
 
         if lambda x: f'{x:5f}':
@@ -159,17 +177,53 @@ class pisdr(gr.top_block, Qt.QWidget):
         else:
             self._variable_qtgui_label_0_formatter = lambda x: eng_notation.num_to_str(x)
 
-        self._variable_qtgui_label_0_tool_bar.addWidget(Qt.QLabel("Frequency (MHz): "))
+        self._variable_qtgui_label_0_tool_bar.addWidget(Qt.QLabel("Freq (MHz): "))
         self._variable_qtgui_label_0_label = Qt.QLabel(str(self._variable_qtgui_label_0_formatter(self.variable_qtgui_label_0)))
         self._variable_qtgui_label_0_tool_bar.addWidget(self._variable_qtgui_label_0_label)
-        self.top_grid_layout.addWidget(self._variable_qtgui_label_0_tool_bar, 0, 1, 1, 1)
+        self.top_grid_layout.addWidget(self._variable_qtgui_label_0_tool_bar, 0, 4, 1, 1)
+        for r in range(0, 1):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(4, 5):
+            self.top_grid_layout.setColumnStretch(c, 1)
+        self._testfreqrange_range = Range(0, 1.2, 0.0001, 0.6, 200)
+        self._testfreqrange_win = RangeWidget(self._testfreqrange_range, self.set_testfreqrange, "Test Frequency", "slider", float, QtCore.Qt.Horizontal)
+        self.top_grid_layout.addWidget(self._testfreqrange_win, 5, 0, 1, 9)
+        for r in range(5, 6):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(0, 9):
+            self.top_grid_layout.setColumnStretch(c, 1)
+        self.sub100000 = _sub100000_toggle_button = qtgui.MsgPushButton('-100000', 'pressed',-100000,"default","default")
+        self.sub100000 = _sub100000_toggle_button
+
+        self.top_grid_layout.addWidget(_sub100000_toggle_button, 0, 0, 1, 1)
+        for r in range(0, 1):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(0, 1):
+            self.top_grid_layout.setColumnStretch(c, 1)
+        self.sub10000 = _sub10000_toggle_button = qtgui.MsgPushButton('-10000', 'pressed',-10000,"default","default")
+        self.sub10000 = _sub10000_toggle_button
+
+        self.top_grid_layout.addWidget(_sub10000_toggle_button, 0, 1, 1, 1)
         for r in range(0, 1):
             self.top_grid_layout.setRowStretch(r, 1)
         for c in range(1, 2):
             self.top_grid_layout.setColumnStretch(c, 1)
-        self._testfreqrange_range = Range(0, 1.2, 0.0001, 0.6, 200)
-        self._testfreqrange_win = RangeWidget(self._testfreqrange_range, self.set_testfreqrange, "Test Frequency", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_layout.addWidget(self._testfreqrange_win)
+        self.sub1000 = _sub1000_toggle_button = qtgui.MsgPushButton('-1000', 'pressed',-1000,"default","default")
+        self.sub1000 = _sub1000_toggle_button
+
+        self.top_grid_layout.addWidget(_sub1000_toggle_button, 0, 2, 1, 1)
+        for r in range(0, 1):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(2, 3):
+            self.top_grid_layout.setColumnStretch(c, 1)
+        self.sub10 = _sub10_toggle_button = qtgui.MsgPushButton('-10', 'pressed',-10,"default","default")
+        self.sub10 = _sub10_toggle_button
+
+        self.top_grid_layout.addWidget(_sub10_toggle_button, 0, 3, 1, 1)
+        for r in range(0, 1):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(3, 4):
+            self.top_grid_layout.setColumnStretch(c, 1)
         self.rtlsdr_source_0 = osmosdr.source(
             args="numchan=" + str(1) + " " + ""
         )
@@ -242,7 +296,11 @@ class pisdr(gr.top_block, Qt.QWidget):
 
         self.qtgui_sink_x_0.enable_rf_freq(True)
 
-        self.top_layout.addWidget(self._qtgui_sink_x_0_win)
+        self.top_grid_layout.addWidget(self._qtgui_sink_x_0_win, 2, 1, 3, 8)
+        for r in range(2, 5):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(1, 9):
+            self.top_grid_layout.setColumnStretch(c, 1)
         self.low_pass_filter_1 = filter.fir_filter_ccf(
             1,
             firdes.low_pass(
@@ -288,14 +346,16 @@ class pisdr(gr.top_block, Qt.QWidget):
                 1e3,
                 window.WIN_HAMMING,
                 6.76))
-        self._freqrange_range = Range(10, 800, 0.01, 105.5, 200)
-        self._freqrange_win = RangeWidget(self._freqrange_range, self.set_freqrange, "Frequency", "counter_slider", float, QtCore.Qt.Horizontal)
-        self.top_grid_layout.addWidget(self._freqrange_win, 0, 0, 1, 1)
-        for r in range(0, 1):
+        self._freqrange_range = Range(10, 800, 0.01, freqrange_default / 1e6, 200)
+        self._freqrange_win = RangeWidget(self._freqrange_range, self.set_freqrange, "Frequency", "slider", float, QtCore.Qt.Horizontal)
+        self.top_grid_layout.addWidget(self._freqrange_win, 1, 0, 1, 9)
+        for r in range(1, 2):
             self.top_grid_layout.setRowStretch(r, 1)
-        for c in range(0, 1):
+        for c in range(0, 9):
             self.top_grid_layout.setColumnStretch(c, 1)
+        self.epy_block_2 = epy_block_2.blk(real_freq=freq * 1e6)
         self.epy_block_0 = epy_block_0.blk(real_freq=freq * 1e6, test_freq=0, source=source_chooser)
+        self.blocks_var_to_msg_0 = blocks.var_to_msg_pair('freq')
         self.blocks_throttle_1_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate / 16,True)
         self.blocks_throttle_1 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate /16,True)
         self.blocks_throttle_0 = blocks.throttle(gr.sizeof_gr_complex*1, samp_rate,True)
@@ -307,7 +367,9 @@ class pisdr(gr.top_block, Qt.QWidget):
         self.blocks_selector_0_0.set_enabled(True)
         self.blocks_selector_0 = blocks.selector(gr.sizeof_gr_complex*1,0,source_chooser)
         self.blocks_selector_0.set_enabled(True)
+        self.blocks_null_source_1 = blocks.null_source(gr.sizeof_gr_complex*1)
         self.blocks_null_source_0 = blocks.null_source(gr.sizeof_gr_complex*1)
+        self.blocks_null_sink_2 = blocks.null_sink(gr.sizeof_gr_complex*1)
         self.blocks_null_sink_1 = blocks.null_sink(gr.sizeof_gr_complex*1)
         self.blocks_null_sink_0_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
         self.blocks_null_sink_0 = blocks.null_sink(gr.sizeof_gr_complex*1)
@@ -315,6 +377,7 @@ class pisdr(gr.top_block, Qt.QWidget):
         self.blocks_multiply_const_vxx_0_0_1 = blocks.multiply_const_ff(5e-1)
         self.blocks_multiply_const_vxx_0_0_0 = blocks.multiply_const_ff(1)
         self.blocks_multiply_const_vxx_0_0 = blocks.multiply_const_ff(1)
+        self.blocks_msgpair_to_var_0 = blocks.msg_pair_to_var(self.set_freqrange_default)
         self.blocks_message_debug_0 = blocks.message_debug(True)
         self.blocks_complex_to_float_0 = blocks.complex_to_float(1)
         self.band_reject_filter_0 = filter.fir_filter_ccf(
@@ -361,12 +424,55 @@ class pisdr(gr.top_block, Qt.QWidget):
         	audio_pass=10000,
         	audio_stop=11000,
         )
+        self.add100000 = _add100000_toggle_button = qtgui.MsgPushButton('+100000', 'pressed',+100000,"default","default")
+        self.add100000 = _add100000_toggle_button
+
+        self.top_grid_layout.addWidget(_add100000_toggle_button, 0, 8, 1, 1)
+        for r in range(0, 1):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(8, 9):
+            self.top_grid_layout.setColumnStretch(c, 1)
+        self.add10000 = _add10000_toggle_button = qtgui.MsgPushButton('+10000', 'pressed',+10000,"default","default")
+        self.add10000 = _add10000_toggle_button
+
+        self.top_grid_layout.addWidget(_add10000_toggle_button, 0, 7, 1, 1)
+        for r in range(0, 1):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(7, 8):
+            self.top_grid_layout.setColumnStretch(c, 1)
+        self.add1000 = _add1000_toggle_button = qtgui.MsgPushButton('+1000', 'pressed',+1000,"default","default")
+        self.add1000 = _add1000_toggle_button
+
+        self.top_grid_layout.addWidget(_add1000_toggle_button, 0, 6, 1, 1)
+        for r in range(0, 1):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(6, 7):
+            self.top_grid_layout.setColumnStretch(c, 1)
+        self.add10 = _add10_toggle_button = qtgui.MsgPushButton('+10', 'pressed',+10,"default","default")
+        self.add10 = _add10_toggle_button
+
+        self.top_grid_layout.addWidget(_add10_toggle_button, 0, 5, 1, 1)
+        for r in range(0, 1):
+            self.top_grid_layout.setRowStretch(r, 1)
+        for c in range(5, 6):
+            self.top_grid_layout.setColumnStretch(c, 1)
 
 
         ##################################################
         # Connections
         ##################################################
+        self.msg_connect((self.add10, 'pressed'), (self.epy_block_2, 'in'))
+        self.msg_connect((self.add1000, 'pressed'), (self.epy_block_2, 'in'))
+        self.msg_connect((self.add10000, 'pressed'), (self.epy_block_2, 'in'))
+        self.msg_connect((self.add100000, 'pressed'), (self.epy_block_2, 'in'))
+        self.msg_connect((self.blocks_var_to_msg_0, 'msgout'), (self.epy_block_2, 'in'))
         self.msg_connect((self.epy_block_0, 'freq'), (self.qtgui_sink_x_0, 'freq'))
+        self.msg_connect((self.epy_block_2, 'freq'), (self.blocks_msgpair_to_var_0, 'inpair'))
+        self.msg_connect((self.epy_block_2, 'freq'), (self.qtgui_sink_x_0, 'freq'))
+        self.msg_connect((self.sub10, 'pressed'), (self.epy_block_2, 'in'))
+        self.msg_connect((self.sub1000, 'pressed'), (self.epy_block_2, 'in'))
+        self.msg_connect((self.sub10000, 'pressed'), (self.epy_block_2, 'in'))
+        self.msg_connect((self.sub100000, 'pressed'), (self.epy_block_2, 'in'))
         self.connect((self.analog_am_demod_cf_0, 0), (self.rational_resampler_xxx_1_0_0_0_2, 0))
         self.connect((self.analog_nbfm_rx_0, 0), (self.blocks_multiply_const_vxx_0_0_1, 0))
         self.connect((self.analog_pwr_squelch_xx_0, 0), (self.analog_wfm_rcv_0, 0))
@@ -382,6 +488,7 @@ class pisdr(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_multiply_const_vxx_0_0_1, 0), (self.audio_sink_0_0_1, 0))
         self.connect((self.blocks_multiply_const_vxx_0_0_1_0, 0), (self.audio_sink_0_0_1_0, 0))
         self.connect((self.blocks_null_source_0, 0), (self.blocks_throttle_1_0, 0))
+        self.connect((self.blocks_null_source_1, 0), (self.epy_block_2, 0))
         self.connect((self.blocks_selector_0, 1), (self.band_pass_filter_0, 0))
         self.connect((self.blocks_selector_0, 5), (self.blocks_null_sink_0, 0))
         self.connect((self.blocks_selector_0, 3), (self.blocks_null_sink_0_0, 0))
@@ -398,6 +505,7 @@ class pisdr(gr.top_block, Qt.QWidget):
         self.connect((self.blocks_throttle_1, 0), (self.blocks_null_sink_1, 0))
         self.connect((self.blocks_throttle_1_0, 0), (self.epy_block_0, 0))
         self.connect((self.epy_block_0, 0), (self.blocks_throttle_1, 0))
+        self.connect((self.epy_block_2, 0), (self.blocks_null_sink_2, 0))
         self.connect((self.high_pass_filter_0, 0), (self.blocks_selector_1_0, 2))
         self.connect((self.low_pass_filter_0, 0), (self.analog_pwr_squelch_xx_0, 0))
         self.connect((self.low_pass_filter_0_0, 0), (self.analog_pwr_squelch_xx_0_0, 0))
@@ -412,11 +520,11 @@ class pisdr(gr.top_block, Qt.QWidget):
         self.connect((self.rational_resampler_xxx_1_0_2_0, 0), (self.high_pass_filter_0, 0))
         self.connect((self.rational_resampler_xxx_1_0_2_1, 0), (self.band_reject_filter_0, 0))
         self.connect((self.rtlsdr_source_0, 0), (self.blocks_selector_0, 0))
-        self.connect((self.rtlsdr_source_0, 0), (self.blocks_selector_0_0, 2))
         self.connect((self.rtlsdr_source_0, 0), (self.blocks_selector_0_0, 3))
         self.connect((self.rtlsdr_source_0, 0), (self.blocks_selector_0_0, 1))
-        self.connect((self.rtlsdr_source_0, 0), (self.blocks_selector_0_0, 0))
         self.connect((self.rtlsdr_source_0, 0), (self.blocks_selector_0_0, 4))
+        self.connect((self.rtlsdr_source_0, 0), (self.blocks_selector_0_0, 2))
+        self.connect((self.rtlsdr_source_0, 0), (self.blocks_selector_0_0, 0))
 
 
     def closeEvent(self, event):
@@ -426,6 +534,13 @@ class pisdr(gr.top_block, Qt.QWidget):
         self.wait()
 
         event.accept()
+
+    def get_freqrange_default(self):
+        return self.freqrange_default
+
+    def set_freqrange_default(self, freqrange_default):
+        self.freqrange_default = freqrange_default
+        self.set_freqrange(self.freqrange_default / 1e6)
 
     def get_testfreqrange(self):
         return self.testfreqrange
@@ -447,7 +562,8 @@ class pisdr(gr.top_block, Qt.QWidget):
     def set_freqrange(self, freqrange):
         self.freqrange = freqrange
         self.set_freq(self.freqrange)
-        self.set_variable_qtgui_label_0(self.freqrange / 1e6)
+        self.set_variable_qtgui_label_0(self.freqrange)
+        self.blocks_var_to_msg_0.variable_changed(self.freqrange)
 
     def get_variable_qtgui_range_1(self):
         return self.variable_qtgui_range_1
